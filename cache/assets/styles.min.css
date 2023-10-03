@@ -10891,8 +10891,8 @@ img {
 
 @font-face {
     font-family: "lptech-font";
-    src: url("http://localhost:5500/themes/vscn-2020/assets/vendors/fonts/lptech-font.eot");
-    src: url("http://localhost:5500/themes/vscn-2020/assets/vendors/fonts/lptech-font.eot?#iefix") format("embedded-opentype"), url("http://localhost:5500/themes/vscn-2020/assets/vendors/fonts/lptech-font.woff") format("woff"), url("http://localhost:5500/themes/vscn-2020/assets/vendors/fonts/lptech-font.ttf") format("truetype"), url("http://localhost:5500/themes/vscn-2020/assets/vendors/fonts/lptech-font.svg#lptech-font") format("svg");
+    src: url("https://vscn011023.vercel.app/themes/vscn-2020/assets/vendors/fonts/lptech-font.eot");
+    src: url("https://vscn011023.vercel.app/themes/vscn-2020/assets/vendors/fonts/lptech-font.eot?#iefix") format("embedded-opentype"), url("https://vscn011023.vercel.app/themes/vscn-2020/assets/vendors/fonts/lptech-font.woff") format("woff"), url("https://vscn011023.vercel.app/themes/vscn-2020/assets/vendors/fonts/lptech-font.ttf") format("truetype"), url("https://vscn011023.vercel.app/themes/vscn-2020/assets/vendors/fonts/lptech-font.svg#lptech-font") format("svg");
     font-weight: normal;
     font-style: normal
 }
@@ -11869,7 +11869,7 @@ ol.breaLink {
 @font-face {
     font-family: "flaticon";
     font-display: swap;
-    src: url("http://localhost:5500/themes/vscn-2020/assets/fonts/flaticon.ttf") format("truetype"), url("http://localhost:5500/themes/vscn-2020/assets/fonts/flaticon.woff") format("woff"), url("http://localhost:5500/themes/vscn-2020/assets/fonts/flaticon.woff2") format("woff2"), url("http://localhost:5500/themes/vscn-2020/assets/fonts/flaticon.eot") format("embedded-opentype"), url("http://localhost:5500/themes/vscn-2020/assets/fonts/flaticon.svg") format("svg")
+    src: url("https://vscn011023.vercel.app/themes/vscn-2020/assets/fonts/flaticon.ttf") format("truetype"), url("https://vscn011023.vercel.app/themes/vscn-2020/assets/fonts/flaticon.woff") format("woff"), url("https://vscn011023.vercel.app/themes/vscn-2020/assets/fonts/flaticon.woff2") format("woff2"), url("https://vscn011023.vercel.app/themes/vscn-2020/assets/fonts/flaticon.eot") format("embedded-opentype"), url("https://vscn011023.vercel.app/themes/vscn-2020/assets/fonts/flaticon.svg") format("svg")
 }
 
 .content-area .owl-theme .owl-dots .owl-dot.active span,
@@ -12181,7 +12181,7 @@ ol.breaLink {
 .section-process {
     position: relative;
     padding: 60px 0;
-    background: linear-gradient(0deg, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.5)), url("http://localhost:5500/themes/vscn-2020/assets/images/bg-partner.png");
+    background: linear-gradient(0deg, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.5)), url("https://vscn011023.vercel.app/themes/vscn-2020/assets/images/bg-partner.png");
     background-repeat: no-repeat;
     background-size: contain;
     background-position: center;
@@ -13758,7 +13758,7 @@ div.single-thumbnail-slider .owl-nav button.owl-prev {
 }
 
 .my_customer {
-    background-image: url(http://localhost:5500/themes/vscn-2020/assets/images/banner-my-customer.jpg);
+    background-image: url(https://vscn011023.vercel.app/themes/vscn-2020/assets/images/banner-my-customer.jpg);
     background-size: cover;
     background-attachment: fixed;
     padding-top: 60px;

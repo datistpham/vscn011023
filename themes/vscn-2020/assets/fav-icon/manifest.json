@@ -54,7 +54,7 @@
             "type": "image\/png"
         }
     ],
-    "start_url": "http://localhost:5500/",
+    "start_url": "https://vscn011023.vercel.app/",
     "gcm_sender_id": "103953800507",
     "display": "standalone",
     "background_color": "#FF9800",
