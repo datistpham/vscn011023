@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <script>
+      if (sessionStorage.getItem("login") !== "true") {
+        window.location.href = window.location.origin + "/admin/login.html";
+      }
+    </script>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Quản lý thanh toán</title>
+    <!-- Sử dụng Bootstrap CSS -->
+    <link
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/moment@2.29.4/moment.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-storage.js"></script>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+      }
+
+      .container {
+        margin: 0 auto;
+        padding: 20px;
+      }
+
+      .product-list {
+        list-style: none;
+        padding: 0;
+      }
+
+      .product-item {
+        display: flex;
+        align-items: center;
+        margin-bottom: 10px;
+      }
+
+      .product-item img {
+        width: 100px;
+        height: 100px;
+        margin-right: 10px;
+      }
+
+      .product-actions {
+        margin-left: auto;
+      }
+
+      /* Custom CSS for the sidebar */
+      .sidenav {
+        height: 100%;
+        width: 250px;
+        position: fixed;
+        z-index: 1;
+        top: 0;
+        left: -250px;
+        background-color: #f8f9fa;
+        padding-top: 40px;
+        transition: 0.3s;
+      }
+
+      .sidenav a {
+        padding: 8px 8px 8px 32px;
+        text-decoration: none;
+        font-size: 18px;
+        color: #000;
+        display: block;
+        transition: 0.3s;
+      }
+
+      .sidenav a:hover {
+        color: #007bff;
+      }
+
+      #main {
+        transition: margin-left 0.3s;
+        padding: 16px;
+      }
+
+      #menu-toggle {
+        cursor: pointer;
+        position: fixed;
+        left: 10px;
+        top: 10px;
+        z-index: 2;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Sidebar -->
+    <span
+      style="font-size: 30px; cursor: pointer; margin-bottom: 20px"
+      id="menu-toggle"
+      >&#9776;
+    </span>
+    <div class="sidenav" id="mySidenav">
+      <a href="/admin/dashboard.html" id="dashboard-link">Quản lý sản phẩm</a>
+      <a href="/admin/settings.html" id="settings-link">Cài đặt</a>
+      <a href="/admin/order.html" id="dashboard-link">Đơn đặt hàng</a>
+    </div>
+    <div id="main">
+      <div class="container">
+        <h1>Danh sách slide web</h1>
+        <!-- Form cho Slider -->
+        <form id="slider-form">
+          <div class="form-group">
+            <label for="slider-image">Chọn hình ảnh slider:</label>
+            <input
+              type="file"
+              class="form-control-file"
+              id="slider-image"
+              accept="image/*"
+              required
+            />
+          </div>
+
+          <!-- Hiển thị xem trước ảnh slider -->
+          <div id="slider-image-preview" class="mt-2" style="display: none;">
+            <img
+              id="slider-preview-image"
+              class="preview-image"
+              src=""
+              alt=""
+              style="aspect-ratio: 5 / 3; width: 1000px; object-fit: cover"
+              loading="lazy"
+            />
+          </div>
+
+          <button
+            id="add-slider-button"
+            type="submit"
+            class="btn btn-primary mt-2"
+          >
+            Thêm slider
+          </button>
+        </form>
+        <div id="slider-list"></div>
+      </div>
+    </div>
+
+    <!-- Modal để hiển thị chi tiết đơn hàng -->
+
+    <!-- Sử dụng Bootstrap JS và Firebase SDK -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.1/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+      // Bổ sung mã JavaScript cho Slider
+
+      // Lấy thẻ HTML cho form Slider và nội dung xem trước ảnh Slider
+      const sliderForm = document.getElementById("slider-form");
+      const sliderImageInput = document.getElementById("slider-image");
+      const sliderImagePreview = document.getElementById(
+        "slider-image-preview"
+      );
+      
+      const sliderPreviewImage = document.getElementById(
+        "slider-preview-image"
+      );
+      const addSliderButton = document.getElementById("add-slider-button");
+
+      // Firebase Realtime Database reference cho Slider
+      const firebaseConfig = {
+        apiKey: "AIzaSyANSwlR-gyTKxCBCdhhWHgbB5Fg5-ODJ3c",
+        authDomain: "tourism-de1ac.firebaseapp.com",
+        projectId: "tourism-de1ac",
+        storageBucket: "tourism-de1ac.appspot.com",
+        messagingSenderId: "204093368364",
+        appId: "1:204093368364:web:88baf7f0e2582e3f4cc989",
+        measurementId: "G-XVC8PLLSJF",
+        databaseURL:
+          "https://tourism-de1ac-default-rtdb.asia-southeast1.firebasedatabase.app",
+      };
+      firebase.initializeApp(firebaseConfig);
+
+      // Tham chiếu đến nhánh "payments"
+      const database = firebase.database();
+      const storage = firebase.storage();
+      const storageRef = storage.ref();
+      const slidersRef = database.ref("slider_vscn_011023");
+
+      // Hàm để thêm slider mới
+      function addSlider() {
+        const imageFile = sliderImageInput.files[0];
+
+        if (imageFile) {
+          addSliderButton.disabled = true;
+          addSliderButton.textContent = "Đang tải...";
+
+          // Tạo một thời gian ngẫu nhiên để đặt tên cho ảnh Slider
+          const randomTime = Date.now() + Math.floor(Math.random() * 10000);
+          const imageId = `slider_${randomTime}`;
+          const imageRef = storageRef.child(`sliders/${imageId}.jpg`);
+
+          imageRef.put(imageFile).then((snapshot) => {
+            snapshot.ref.getDownloadURL().then((downloadURL) => {
+              const slider = {
+                imageUrl: downloadURL,
+                sliderId: imageId,
+              };
+
+              slidersRef.push(slider);
+
+              // Reset form và nút Thêm slider
+              sliderImageInput.value = "";
+              sliderPreviewImage.src = "";
+              addSliderButton.disabled = false;
+              addSliderButton.textContent = "Thêm slider";
+            sliderImagePreview.style.display= "none"
+              alert("Thêm slider thành công");
+            });
+          });
+        }
+      }
+
+      // Xử lý sự kiện khi người dùng chọn ảnh Slider
+      sliderImageInput.addEventListener("change", function (event) {
+        sliderImagePreview.style.display= "block"
+        sliderPreviewImage.src = URL.createObjectURL(event.target.files[0]);
+      });
+
+      // Xử lý sự kiện nút Thêm slider
+      sliderForm.addEventListener("submit", function (event) {
+        event.preventDefault();
+        addSlider();
+      });
+
+      // Sử dụng Firebase để lắng nghe sự thay đổi trong danh sách Slider và cập nhật giao diện
+      slidersRef.on("value", (snapshot) => {
+        const slidersObject = snapshot.val();
+        if (slidersObject) {
+          const slidersArray = Object.values(slidersObject);
+
+          // Hiển thị danh sách Slider
+          const sliderList = document.getElementById("slider-list");
+          sliderList.innerHTML = ""; // Xóa danh sách Slider hiện tại
+
+          slidersArray.forEach((slider) => {
+            const li = document.createElement("li");
+            li.className = "slider-item";
+
+            // Hiển thị ảnh Slider và nút xoá
+            li.innerHTML = `
+            <div class="mt-2 flex ">
+                <img style="aspect-ratio: 5 / 3; width: 1000px; object-fit: cover" src="${slider.imageUrl}" alt="Slider Image">
+        <button class="btn btn-danger ml-2" onclick="deleteSlider('${slider.sliderId}')">Xoá</button></div>
+      `;
+
+            sliderList.appendChild(li);
+          });
+        }
+      });
+
+      // Hàm để xoá Slider
+      function deleteSlider(sliderId) {
+        const confirmDelete = confirm("Bạn có chắc chắn muốn xoá slider này?");
+
+        if (confirmDelete) {
+          // Sử dụng Firebase để xoá Slider dựa trên sliderId
+          slidersRef.once("value").then((snapshot) => {
+            const slidersObject = snapshot.val();
+            const dataArray = [];
+            for (const key in slidersObject) {
+              const item = slidersObject[key];
+              item.key = key; // Thêm key vào mỗi phần tử
+              dataArray.push(item);
+            }
+
+            // Lặp qua danh sách Slider và tìm Slider có sliderId trùng khớp
+            const result = dataArray.find((item) => item.sliderId === sliderId);
+            if (result) {
+              slidersRef.child(result.key).remove();
+            }
+          });
+
+          // Sử dụng Firebase để lắng nghe sự kiện child_removed để cập nhật danh sách khi có Slider bị xoá
+          slidersRef.on("child_removed", (snapshot) => {
+            // Xóa Slider tương ứng khỏi danh sách Slider
+            const deletedSliderLi = document.querySelector(
+              `.slider-item button[onclick="deleteSlider('${sliderId}')"]`
+            );
+
+            if (deletedSliderLi) {
+              deletedSliderLi.parentElement.remove();
+            }
+          });
+        }
+      }
+    </script>
+    <script>
+      // Toggle sidebar
+      document
+        .getElementById("menu-toggle")
+        .addEventListener("click", function () {
+          const sidebar = document.getElementById("mySidenav");
+          const main = document.getElementById("main");
+
+          if (sidebar.style.left === "0px") {
+            sidebar.style.left = "-250px";
+            main.style.marginLeft = "0";
+          } else {
+            sidebar.style.left = "0";
+            main.style.marginLeft = "250px";
+          }
+        });
+
+      // Sidebar links
+      const dashboardLink = document.getElementById("dashboard-link");
+      const settingsLink = document.getElementById("settings-link");
+
+      dashboardLink.addEventListener("click", function () {
+        loadPage("dashboard.html");
+      });
+
+      settingsLink.addEventListener("click", function () {
+        loadPage("settings.html");
+      });
+
+      // Function to load page without reloading
+      function loadPage(url) {
+        const main = document.getElementById("main");
+        main.innerHTML =
+          '<object type="text/html" data="' +
+          url +
+          '" style="width:100%;height:100%;"></object>';
+      }
+    </script>
+  </body>
+</html>
